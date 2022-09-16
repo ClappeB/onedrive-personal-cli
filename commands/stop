@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e
+. "$ONEDRIVE_WORKDIR/common"
+
+cli_help_stop() {
+  echo "
+Command: stop 
+
+Usage: onedrive stop [repository]
+  "
+  exit 1
+}
+
+[ ! -n "$1" ] && cli_help_start
+
+#export ONEDRIVE_REPO_NAME=$1
+
+case $1 in
+  perso|cartel)
+    cli_log "Stopping onedrive container for $1"
+    docker_handle $1 down
+    # cd $HOME/onedrive/$1 && docker compose up -d >> /dev/null
+    ;;
+  *)
+    cli_log "$1 is not known"
+    exit 1
+    ;;
+esac
+cli_log "OneDrive process stopped"

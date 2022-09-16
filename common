@@ -1,0 +1,39 @@
+#!/bin/bash
+#set -e
+
+cli_log() {
+  script_name=${0##*/}
+  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  echo "== $script_name $timestamp | $1"
+}
+
+docker_handle() {
+  option=''
+  if [ $2 == 'up' ]; then
+    option='-d'
+  fi
+  cd $HOME/onedrive/$1 && docker compose $2 $option >> /dev/null
+}
+
+docker_logs() {
+  container=$(docker ps | awk 'NR>1 {print $NF}' | grep $1)
+  #containers=$(echo $container_raw | grep $1)
+  nb_containers=$(echo $container | wc -w)
+  if [ $nb_containers != 1 ]; then
+    cli_log "Error : found $nb_containers containers. One required."
+    exit 1
+  else
+    echo "Logging $container"
+    docker logs -f $container
+  fi
+}
+
+check_repo_list() {
+  case $1 in
+    perso|cartel)
+      return 0;; # Means "return true"
+    *)
+      cli_log "Repository $1 is unknown."
+      exit 1;;
+   esac
+}

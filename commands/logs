@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+. "$ONEDRIVE_WORKDIR/common"
+
+cli_help_logs() {
+  echo "
+Command: logs 
+
+Usage: onedrive logs [repository]
+  "
+  exit 1
+}
+
+[ ! -n "$1" ] && cli_help_logs
+
+check_repo_list $1 && docker_logs $1

@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#set -e
+export ONEDRIVE_WORKDIR=$HOME/custom_cli/onedrive/
+# $(cd $(dirname $0) && pwd)
+. "$ONEDRIVE_WORKDIR/common"
+
+cli_help() {
+  cli_name=${0##*/}
+  echo "
+$cli_name
+Custom OneDrive CLI
+Version: $(cat $ONEDRIVE_WORKDIR/VERSION)
+
+Usage: $cli_name [command]
+
+Commands:
+  start 	Starts the synchronization process
+  stop  	Stop the synchronization process
+  status	Shows if the process for the given repository is currently running
+  logs		Shows and follows the logs for the onedrive repository's container
+"
+  exit 1
+}
+
+#cli_log "Exporting config..."
+#export $(cat "$ONEDRIVE_WORKDIR/config" | xargs)
+
+export ONEDRIVE_COMMANDS=$ONEDRIVE_WORKDIR/commands
+
+case "$1" in
+  start)
+    "$ONEDRIVE_COMMANDS/start" "$2"
+    ;;
+  stop)
+    "$ONEDRIVE_COMMANDS/stop" "$2"
+    ;;
+  status)
+    "$ONEDRIVE_COMMANDS/status" "$2"
+    ;;
+  logs)
+    "$ONEDRIVE_COMMANDS/logs" "$2"
+    ;;
+  *)
+    cli_help
+    ;;
+esac
+

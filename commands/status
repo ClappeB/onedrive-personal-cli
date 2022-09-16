@@ -1,0 +1,48 @@
+#!/bin/bash
+set -e
+. "$ONEDRIVE_WORKDIR/common"
+
+cli_help_status() {
+  echo "
+Command: status 
+
+Usage: onedrive status [repository]
+  "
+  exit 1
+}
+
+#[ ! -n "$1" ] && cli_help_status
+
+export ONEDRIVE_REPO=$1
+
+case $1 in
+  help)
+    cli_help_status
+    exit 1
+    ;;
+  perso|cartel)
+    #docker_handle "ls"
+    cd $HOME/onedrive/$1 && running=$(docker compose ls | grep $1 | wc -l)
+    if [ $running -eq 1 ]; then
+      echo "Running"
+    else
+      echo "Not running"
+    fi
+    ;;
+  all)
+    docker compose ls | awk 'NR>1 {print $1}'
+    ;;
+  "")
+    nb_running=$(docker compose ls | wc -l)
+    if [ $nb_running -le 1 ]; then
+      echo "Nothing is running"
+    else
+      echo "Running:"
+      docker compose ls | awk 'NR>1 {print $1}' | xargs -I , echo -e "  - ,"
+     fi
+     ;;
+  *)
+    cli_log "$1 is not known"
+    exit 1
+    ;;
+esac
